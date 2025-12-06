@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Universe Soundboard</title>
+
+<style>
+    :root {
+        --bg1: #ced9ff;
+        --bg2: #ffffff;
+        --card: #ffffff;
+        --primary: #728dff;
+        --hover: #a7b8ff;
+        --text: #1c1c1c;
+        --muted: #6c6c6c;
+        --panel: #f3f5ff;
+        --glow: rgba(110,150,255,0.4);
+    }
+
+    body.dark {
+        --bg1: #0d0f18;
+        --bg2: #1b2030;
+        --card: #1c1f2b;
+        --primary: #9cb2ff;
+        --hover: #bfc9ff;
+        --text: #f5f5f5;
+        --muted: #9d9d9d;
+        --panel: #282c3a;
+        --glow: rgba(140,170,255,0.4);
+    }
+
+    body {
+        margin: 0;
+        background: linear-gradient(145deg, var(--bg1), var(--bg2));
+        font-family: "Inter", sans-serif;
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 50px 20px;
+        transition: background .35s ease;
+    }
+
+    .wrapper {
+        width: 100%;
+        max-width: 700px;
+        background: var(--card);
+        border-radius: 20px;
+        padding: 36px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.08);
+        position: relative;
+        transition: .3s ease;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 2.2rem;
+        margin-bottom: 28px;
+        color: var(--text);
+        font-weight: 600;
+        letter-spacing: -1px;
+    }
+
+    #themeBtn {
+        position: absolute;
+        right: 25px;
+        top: 25px;
+        padding: 10px 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        background: var(--panel);
+        border: 1px solid rgba(255,255,255,0.18);
+        color: var(--text);
+        transition: .25s;
+    }
+
+    #themeBtn:hover {
+        background: var(--hover);
+        color: #000;
+    }
+
+    .grid {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+        margin-bottom: 35px;
+    }
+
+    .btn {
+        background: var(--panel);
+        border: 2px solid rgba(255,255,255,0.14);
+        border-radius: 15px;
+        padding: 22px 15px;
+        cursor: pointer;
+        text-align: center;
+        color: var(--text);
+        font-size: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        transition: .28s ease;
+    }
+
+    .btn:hover {
+        border-color: var(--primary);
+        transform: translateY(-4px);
+        box-shadow: 0px 0px 12px var(--glow);
+    }
+
+    .btn.playing {
+        background: rgba(110,150,255,0.18);
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: translateY(-4px);
+        box-shadow: 0 0 14px var(--glow);
+    }
+
+    .icon {
+        font-size: 30px;
+    }
+
+    .panel {
+        background: var(--panel);
+        border-radius: 16px;
+        padding: 22px;
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: .3s ease;
+    }
+
+    .label {
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--text);
+    }
+
+    input[type="range"] {
+        width: 100%;
+        cursor: pointer;
+    }
+
+    #mute {
+        margin-top: 15px;
+        padding: 12px;
+        width: 130px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        background: #e0e4ff;
+        border: none;
+        transition: .25s;
+    }
+
+    #mute.active {
+        background: #ffbcbc;
+        color: #630000;
+    }
+
+    footer {
+        margin-top: 28px;
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--muted);
+    }
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+    <button id="themeBtn">🌙 Dark Mode</button>
+
+    <h1>🌌 Universe Soundboard</h1>
+
+   <div class="grid">
+    <button class="btn" data-sound="space"><div class="icon">🛰️</div>Space Ambience</button>
+    <button class="btn" data-sound="blackhole"><div class="icon">🕳️</div>Black Hole</button>
+    <button class="btn" data-sound="jupiter"><div class="icon">⚡</div>Jupiter Storm</button>
+    <button class="btn" data-sound="saturn"><div class="icon">🪐</div>Saturn Rings</button>
+    <button class="btn" data-sound="nebula"><div class="icon">🌌</div>Nebula Waves</button>
+    <button class="btn" data-sound="mars"><div class="icon">🌬️</div>Martian Wind</button>
+    <button class="btn" data-sound="pulsar"><div class="icon">📡</div>Pulsar Signal</button>
+    <button class="btn" data-sound="spaceship"><div class="icon">🚀</div>Spaceship Hum</button>
+</div>
+
+    <div class="panel">
+        <div class="label">Volume: <span id="volDisplay">70%</span></div>
+        <input id="vol" type="range" min="0" max="1" step="0.05" value="0.7">
+        <button id="mute">Mute</button>
+    </div>
+
+    
+</div>
+
+<script>
+    const audioFiles = {
+    space: "sounds/Space-ambience-test.mp3",
+    blackhole: "sounds/Black-Hole-final.mp3",
+    jupiter: "sounds/Jupiter-Storm.mp3",
+    saturn: "sounds/Saturn.mp3",
+    nebula: "sounds/Helix-Nebula.mp3",
+    mars: "sounds/Martian-Winds.mp3",       
+    pulsar: "sounds/Pulsar.mp3",
+    spaceship: "sounds/Spaceship.mp3"
+};
+
+
+
+    const audios = {};
+    let currentSound = null;
+    let volume = 0.7;
+    let muted = false;
+
+    const buttons = document.querySelectorAll(".btn");
+    const volSlider = document.getElementById("vol");
+    const volDisplay = document.getElementById("volDisplay");
+    const muteBtn = document.getElementById("mute");
+
+    for (let key in audioFiles) {
+        const audio = new Audio(audioFiles[key]);
+        audio.loop = true;
+        audio.volume = volume;
+        audios[key] = audio;
+    }
+
+
+    function playSound(soundKey) {
+        const newSound = audios[soundKey];
+
+        if (currentSound && currentSound !== newSound) {
+            fadeOut(currentSound);
+            buttons.forEach(b => b.classList.remove("playing"));
+        }
+
+        if (newSound.paused) {
+            fadeIn(newSound);
+            document.querySelector(`[data-sound="${soundKey}"]`).classList.add("playing");
+            currentSound = newSound;
+        } else {
+            fadeOut(newSound);
+            currentSound = null;
+        }
+    }
+
+    function fadeIn(audio) {
+        audio.volume = 0;
+        audio.play();
+        let vol = 0;
+        const fade = setInterval(() => {
+            if (vol < volume && !muted) {
+                vol += 0.05;
+                audio.volume = vol;
+            } else clearInterval(fade);
+        }, 60);
+    }
+
+    function fadeOut(audio) {
+        let vol = audio.volume;
+        const fade = setInterval(() => {
+            if (vol > 0) {
+                vol -= 0.05;
+                audio.volume = vol;
+            } else {
+                clearInterval(fade);
+                audio.pause();
+                audio.volume = volume;
+            }
+        }, 60);
+    }
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => playSound(btn.dataset.sound));
+    });
+
+    volSlider.addEventListener("input", () => {
+        volume = parseFloat(volSlider.value);
+        volDisplay.textContent = `${Math.round(volume * 100)}%`;
+
+        if (!muted && currentSound) currentSound.volume = volume;
+    });
+
+    muteBtn.addEventListener("click", () => {
+        muted = !muted;
+        muteBtn.classList.toggle("active");
+
+        if (currentSound) currentSound.volume = muted ? 0 : volume;
+    });
+
+    const themeBtn = document.getElementById("themeBtn");
+    const savedTheme = localStorage.getItem("theme") || "light";
+
+    applyTheme(savedTheme);
+
+    function applyTheme(t) {
+        if (t === "dark") {
+            document.body.classList.add("dark");
+            themeBtn.textContent = "☀️ Light Mode";
+        } else {
+            document.body.classList.remove("dark");
+            themeBtn.textContent = "🌙 Dark Mode";
+        }
+        localStorage.setItem("theme", t);
+    }
+
+    themeBtn.addEventListener("click", () => {
+        applyTheme(document.body.classList.contains("dark") ? "light" : "dark");
+    });
+
+</script>
+
+</body>
+</html>
